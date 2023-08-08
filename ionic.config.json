@@ -1,0 +1,7 @@
+{
+  "name": "QuickFind",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
