@@ -1,16 +1,57 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
-import HomePage from '../views/HomePage.vue'
+import Connexion from '../pages/Connexion.vue'
+import Inscription from '../pages/Inscription.vue'
 
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/annonces'
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: HomePage
+    path: '/connexion',
+    component: Connexion
+  },
+  {
+    path: '/inscription',
+    component: Inscription,
+    name:"Inscription"
+  },
+  {
+    path:'/annonces',
+    name:"Annonces",
+    component: ()=> import ('../pages/ListAnnonces.vue')
+  },
+  {
+    path:'/annonces/:id',
+    name:'DetailAnnonce',
+    prop:true,
+    component:()=> import ('../pages/DetailAnnonce.vue')
+  },
+   {
+    path:'/produit/physiques',
+    name:'ProduitsPhysiques',
+    prop:true,
+    component:()=> import ('../pages/ProduitsPhysiques.vue')
+  },
+    {
+    path:'/services',
+    name:'Services',
+    prop:true,
+    component:()=> import ('../pages/Services.vue')
+  },
+    {
+    path:'/immobiliers',
+    name:'Immobiliers',
+    prop:true,
+    component:()=> import ('../pages/Immobilier.vue')
+  },
+  {
+    path:'/annonce/publier',
+    name:'CreerAnnonce',
+    prop:true,
+    component:()=> import ('../pages/AnnonceForm.vue')
   }
+  
 ]
 
 const router = createRouter({
