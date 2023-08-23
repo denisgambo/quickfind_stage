@@ -7,19 +7,30 @@
             <router-link :to="{ name: 'Immobiliers' }" class="nav-link nav-link-active">Immobilier</router-link>
         </div>
         <div class="search">
-            <input type="search" placeholder="Rechercher" class="custom_input">
+            <ion-searchbar show-clear-button="focus" value=""></ion-searchbar>
+
+            <!-- <input type="search" placeholder="Rechercher" class="custom_input"> -->
             <!-- <ion-input type="text" label="Recherche" class="rounded custom_input"></ion-input> -->
         </div>
         <ion-grid>
             <ion-row>
                 <ion-col size="6" size-md="6" size-lg="4" v-for="ann in toutesAnnonces" :key="ann._id">
+                    <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
+                        vendeur</router-link>
                     <!-- Ajouter router-link sur ion-card -->
                     <ion-card :router-link="`/annonces/${ann._id}`">
+
+
+
                         <!-- <ion-img :src="ann.image"></ion-img> -->
                         <img :src="ann.photo[0]" alt="">
                         <ion-card-title>{{ ann.titre }}</ion-card-title>
                         <ion-card-content>
-                            Here's a small text description
+                            <ion-text>
+                                <h2 v-if="ann.prix_vente">Vente: {{ ann.prix_vente }}</h2>
+                                <h2 v-if="ann.prix_location">Location: {{ ann.prix_location }} FCAF/{{ ann.duree_location }}
+                                </h2>
+                            </ion-text>
                             <!-- Ajouter router-link sur ion-button -->
                             <ion-button fill="clear" :router-link="`/annonces/${ann.id}`">Voir</ion-button>
 
@@ -32,21 +43,26 @@
 </template>
 
 <script>
-import { IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput } from '@ionic/vue';
-import axiosClient from '../api/axiosClient'
+import { IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText } from '@ionic/vue';
+import { trashBin } from 'ionicons/icons';
+
 import { ToutesAnnonces } from '../api/annonces'
 export default {
     name: "Annonces",
     components: {
-        IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput
+        IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText
     },
     data() {
         return {
+            user: {},
+            trashBin,
             toutesAnnonces: []
         }
     },
     created() {
         this.chargerToutesAnnonces()
+        this.user = JSON.parse(sessionStorage.getItem("user"))
+
     },
     /*   computed: {
           annonces() {
@@ -93,8 +109,13 @@ ion-card>img {
     background-color: aliceblue;
 }
 
+ion-searchbar {
+    --ion-background-color: aliceblue;
+    --border-radius: 10px;
+}
+
 .search {
-    width: 80%;
+    width: 90%;
     margin: 10px auto;
 
 

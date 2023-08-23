@@ -7,7 +7,8 @@
             </ion-card-title>
             <ion-card-content>
                 <h3 class="text">Prix unitaire: {{ annonce.prix_vente }}</h3>
-                <h3 class="text" v-if="annonce.type == 'produit'">prix de location: {{ annonce.prix_location }}</h3>
+                <h3 class="text" v-if="annonce.type == 'produit'">prix de location: {{ annonce.prix_location }} FCFA/{{
+                    annonce.duree_location }}</h3>
                 <h3 class="moyen">Description du produit</h3>
                 <p> <br> {{ annonce.description }}</p>
             </ion-card-content>
@@ -57,7 +58,7 @@ export default {
     methods: {
         async ChargeAnnonce() {
             this.annonce = await AnnonceParId(this.id)
-            // console.log(this.annonce)
+            console.log(this.annonce)
         },
         send() {
             this.messageForm = true

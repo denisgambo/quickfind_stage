@@ -2,6 +2,8 @@
     <annonce-layout>
 
         <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annonces" :key="ann.id">
+            <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
+                vendeur</router-link>
             <!-- Ajouter router-link sur ion-card -->
             <ion-card :router-link="`/annonces/${ann.id}`">
                 <!-- <ion-img :src="ann.image"></ion-img> -->
@@ -32,6 +34,15 @@ export default {
         IonCardTitle
 
     },
+    data() {
+        return {
+            user: {}
+        }
+    },
+    created() {
+        this.user = JSON.parse(sessionStorage.getItem("user"))
+    },
+
     computed: {
         annonces() {
             return this.$store.state.annonces;

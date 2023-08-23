@@ -1,13 +1,19 @@
 <template>
     <annonce-layout>
         <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annonces" :key="ann._id">
+            <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
+                vendeur</router-link>
             <!-- Ajouter router-link sur ion-card -->
             <ion-card :router-link="`/annonces/${ann._id}`">
                 <!-- <ion-img :src="ann.image"></ion-img> -->
                 <img :src="ann.photo[0]" alt="">
                 <ion-card-title class="ion-text-lg">{{ ann.titre }}</ion-card-title>
                 <ion-card-content>
-                    <p class="prix">{{ ann.prix_vente }} FCFA</p>
+                    <ion-text>
+                        <h2 v-if="ann.prix_vente">Vente: {{ ann.prix_vente }} FCFA</h2>
+                        <h2 v-if="ann.prix_location">Location: {{ ann.prix_location }} FCAF/{{ ann.duree_location }}
+                        </h2>
+                    </ion-text>
                     <!-- Ajouter router-link sur ion-button -->
                     <ion-button fill="clear" :router-link="`/annonces/${ann.id}`">Voir</ion-button>
 
@@ -19,11 +25,12 @@
 
 <script>
 import { ToutesAnnoncesProduits } from '../api/annonces';
-import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle } from '@ionic/vue';
+import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle, IonText } from '@ionic/vue';
 export default {
     name: "ProduitsPhysiques",
     data() {
         return {
+            user: {},
             annonces: []
         }
     },
@@ -34,11 +41,14 @@ export default {
         IonCard,
         IonCardContent,
         IonGrid, IonRow, IonCol,
-        IonCardTitle
+        IonCardTitle,
+        IonText
 
     },
     created() {
-        this.chargerProduits()
+        this.chargerProduits(),
+            this.user = JSON.parse(sessionStorage.getItem("user"))
+        console.log("user: ", this.user)
     },
     /*  computed: {
          annonces() {

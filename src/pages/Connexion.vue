@@ -20,7 +20,7 @@
                     <ion-input label="Mot de passe" v-model="password" type="password" placeholder="******"></ion-input>
                 </ion-item>
 
-                <ion-button @click="login" class="button" color="secondary">Se connecter</ion-button>
+                <ion-button @click="loginUser" class="button" color="secondary">Se connecter</ion-button>
                 <p>Pas de compte ? <ion-button fill="clear" router-link="/inscription">S'inscrire</ion-button>
                 </p>
 
@@ -54,13 +54,17 @@
                 </div>
             </div>
 
+            <!-- Composant IonToast pour afficher les messages d'erreur -->
+            <ion-toast :message="toastMessage" :color="toastColor" :duration="toastDuration" :position="toastPosition"
+                :is-open="isToastVisible" @ionToastDidDismiss="clearToast"></ion-toast>
+
         </ion-content>
     </ion-page>
 </template>
 
 <script>
-
-import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon } from '@ionic/vue';
+import { login } from '../api/user';
+import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonToast } from '@ionic/vue';
 import { add, logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
 import router from '../router';
 export default {
@@ -76,12 +80,18 @@ export default {
         IonInput,
         IonButton,
         IonImg,
-        IonIcon
+        IonIcon, IonToast
     },
     data() {
         return {
             email: '',
             password: '',
+            user: {},
+            isToastVisible: false,
+            toastMessage: '',
+            toastColor: 'danger',
+            toastDuration: 3000,
+            toastPosition: 'middle',
             add,
             logoGoogle,
             logoFacebook,
@@ -92,10 +102,26 @@ export default {
          this.gotoAnnonces()
      }, */
     methods: {
-        login() {
-            // Ajoutez ici votre logique de connexion
-            router.push({ name: 'Annonces' });
+        async loginUser() {
+            console.log("login: ", this.email, "pass: ", this.password)
+            try {
+                // Ajoutez ici votre logique de connexion
+                this.user = await login(this.email, this.password)
+                console.log(this.user);
+                this.user.isConnected = true
+                sessionStorage.setItem('user', JSON.stringify(this.user)); // Utilisation de sessionStorage
+                router.push({ name: 'Annonces' });
+            } catch (error) {
+                console.log(error);
+                console.log(error);
+                this.toastMessage = 'Login ou mot de passe incorrect';
+                this.isToastVisible = true; // Afficher le toast
+            }
         },
+        clearToast() {
+            this.isToastVisible = false; // Cacher le toast
+        },
+
         gotoInscription() {
             router.push({ name: 'Inscription' });
         },
@@ -111,6 +137,13 @@ export default {
 .login-page {
     /* --ion-background-color: #f4f4f4; */
     --ion-background-color: linear-gradient(to bottom, rgb(248, 177, 46), rgb(247, 247, 43));
+}
+
+.centered-toast {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 

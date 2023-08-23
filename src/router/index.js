@@ -50,7 +50,13 @@ const routes = [
     name:'CreerAnnonce',
     prop:true,
     component:()=> import ('../pages/AnnonceForm.vue')
-  }
+  },
+   {
+    path:'/devenir-vendeur',
+    name:'Paiement',
+    prop:true,
+    component:()=> import ('../pages/Paiement.vue')
+  },
   
 ]
 
