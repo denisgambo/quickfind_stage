@@ -29,9 +29,12 @@
             <div class="menu" v-if="user">
                 <ion-list v-show="isDropdownOpen">
                     <ion-item button @click="navigateTo('/page1')">Déconnexion</ion-item>
-                    <ion-item button @click="navigateTo('/page2')" v-if="user && user.statut === 'vendeur'">Gérer mes
+                    <ion-item button @click="navigateTo('/vendeur/dasbord')" v-if="user && user.statut === 'vendeur'">Gérer
+                        mes
                         annonces</ion-item>
-                    <ion-item button @click="navigateTo('/page3')">Publier une annonce</ion-item>
+                    <ion-item button @click="navigateTo('/annonce/publier')"
+                        v-if="user && user.statut === 'vendeur'">Publier une
+                        annonce</ion-item>
                     <!-- Ajoutez d'autres options selon vos besoins -->
                 </ion-list>
             </div>
@@ -58,7 +61,7 @@
         </ion-content>
         <ion-footer>
             <ion-toolbar>
-                <ion-title>Footer Toolbar</ion-title>
+                <ion-title>QuickFind v1.0</ion-title>
             </ion-toolbar>
         </ion-footer>
     </ion-page>

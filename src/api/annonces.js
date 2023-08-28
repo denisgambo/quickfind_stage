@@ -31,6 +31,16 @@ async function ToutesAnnoncesServices() {
     }
 }
 
+async function ToutesAnnoncesImmobilier() {
+    try {
+        const response = await axios.get(`${API_URL}/annonces/immobilier`);
+        return response.data.annonces;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 async function AnnonceParId(id) {
     try {
         const response = await axios.get(`${API_URL}/annonces/${id}`);
@@ -41,4 +51,4 @@ async function AnnonceParId(id) {
     }
 }
 
-export { ToutesAnnonces, ToutesAnnoncesProduits, ToutesAnnoncesServices, AnnonceParId };
+export { ToutesAnnonces, ToutesAnnoncesProduits, ToutesAnnoncesServices,ToutesAnnoncesImmobilier, AnnonceParId };

@@ -27,7 +27,7 @@
                         <ion-card-title>{{ ann.titre }}</ion-card-title>
                         <ion-card-content>
                             <ion-text>
-                                <h2 v-if="ann.prix_vente">Vente: {{ ann.prix_vente }}</h2>
+                                <h2 v-if="ann.prix_vente">Vente: {{ ann.prix_vente }} FCFA</h2>
                                 <h2 v-if="ann.prix_location">Location: {{ ann.prix_location }} FCAF/{{ ann.duree_location }}
                                 </h2>
                             </ion-text>

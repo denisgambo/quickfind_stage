@@ -34,7 +34,10 @@
                 </div>
             </div>
             <div class="social_btns">
-                <p>Se connecter avec</p>
+                <ion-item class="ion-text-center" lines="none">
+                    Se connecter avec
+                </ion-item>
+                <!-- <p>Se connecter avec</p> -->
                 <div class="btns">
                     <!-- liste des boutons pour les réseaux sociaux -->
 

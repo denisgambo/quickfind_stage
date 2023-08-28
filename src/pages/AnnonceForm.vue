@@ -2,6 +2,9 @@
     <ion-page class="login-page">
         <ion-header>
             <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-back-button></ion-back-button>
+                </ion-buttons>
                 <ion-title>Faire une annonce</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -106,8 +109,8 @@
 
 <script>
 
-import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonCheckbox, IonTextarea, IonSelect, IonSelectOption } from '@ionic/vue';
-import { add, logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
+import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonButtons, IonBackButton } from '@ionic/vue';
+import { logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
 import router from '../router';
 import axios from 'axios'
 export default {
@@ -123,7 +126,7 @@ export default {
         IonInput,
         IonButton,
         IonImg,
-        IonIcon,
+        IonIcon, IonButtons, IonBackButton,
         IonCheckbox, IonTextarea,
         IonSelect, IonSelectOption
     },
@@ -132,6 +135,7 @@ export default {
             logoGoogle,
             logoFacebook,
             logoTwitter,
+            user: {},
             annonce: {
                 titre: "",
                 en_location: false,
@@ -146,14 +150,14 @@ export default {
                 adresse: "",
                 photo: "",
                 disponibilite: true,
-                proprietaire: 1,
+                proprietaire: "",
                 caracteristique: ""
             }
         };
     },
-    /*  created() {
-         this.gotoAnnonces()
-     }, */
+    created() {
+        this.user = JSON.parse(sessionStorage.getItem("user"))
+    },
     methods: {
 
 
@@ -179,7 +183,7 @@ export default {
                 formData.append('titre', this.annonce.titre);
                 formData.append('en_vente', this.annonce.en_vente);
                 formData.append('en_location', this.annonce.en_location);
-
+                formData.append('proprietaire', this.user.userId);
 
                 formData.append('prix_vente', this.annonce.prix_vente);
                 formData.append('prix_location', this.annonce.prix_location);

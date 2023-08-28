@@ -57,6 +57,12 @@ const routes = [
     prop:true,
     component:()=> import ('../pages/Paiement.vue')
   },
+  {
+    path:'/vendeur/dasbord',
+    name:'DashbordVendeur',
+    prop:true,
+    component:()=> import ('../pages/DashbordVendeur.vue')
+  },
   
 ]
 
