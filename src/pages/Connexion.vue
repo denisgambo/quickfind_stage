@@ -106,7 +106,6 @@ export default {
      }, */
     methods: {
         async loginUser() {
-            console.log("login: ", this.email, "pass: ", this.password)
             try {
                 // Ajoutez ici votre logique de connexion
                 this.user = await login(this.email, this.password)

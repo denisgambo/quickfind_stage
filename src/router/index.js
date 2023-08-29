@@ -63,6 +63,13 @@ const routes = [
     prop:true,
     component:()=> import ('../pages/DashbordVendeur.vue')
   },
+
+   {
+    path:'/profil/:id',
+    name:'Profil',
+    prop:true,
+    component:()=> import ('../pages/Profil.vue')
+  },
   
 ]
 

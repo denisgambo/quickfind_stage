@@ -12,6 +12,7 @@
                         annonce.duree_location
                     }}
                     </h1>
+
                     <div class="separator"></div>
                     <!-- <h4 class="moyen">Description du produit</h4> -->
                     <h2> <br> {{ annonce.description }}</h2>
@@ -37,6 +38,8 @@
                         </h1>
                     </ion-item>
 
+
+
                 </ion-text>
                 <!-- <h3 class="text">Prix unitaire: {{ annonce.prix_vente }}</h3>
                 <h3 class="text" v-if="annonce.type == 'produit'">prix de location: {{ annonce.prix_location }} FCFA/{{
@@ -47,54 +50,92 @@
 
             <div class="message" v-if="messageForm">
                 <h2>Envoyer un message</h2>
-                <form class="message_form">
-                    <ion-input label="" placeholder="Ecrire votre message" class="ion-border"></ion-input>
-                    <ion-button>Envoyer</ion-button>
+                <form class="message_form" @submit.prevent="envoyer()">
+                    <ion-input label="" placeholder="Ecrire votre message" class="ion-border"
+                        v-model="message.contenu"></ion-input>
+                    <ion-button type="submit">Envoyer</ion-button>
                 </form>
             </div>
+
+            <ion-item>
+                <div class="">
+                    <ion-button fill="clear" size="large" class="" color="light">
+                        44
+                        <ion-icon :icon="chatboxEllipsesOutline"></ion-icon>
+                        <!-- <ion-badge>11</ion-badge> -->
+                    </ion-button>
+
+                </div>
+            </ion-item>
         </ion-card>
 
     </base-layout>
 </template>
 
 <script>
-import { IonCard, IonCardContent, IonCardTitle, IonButton, IonInput, IonText, IonItem, IonSegment, IonLabel } from '@ionic/vue'
+import { envoyerMessage } from '../api/message';
+
+import { IonCard, IonCardContent, IonCardTitle, IonButton, IonInput, IonText, IonItem, IonLabel, IonBadge, IonIcon } from '@ionic/vue'
+import { chatboxEllipsesOutline } from 'ionicons/icons'
 import BaseLayout from '../components/Base/BaseLayout.vue'
 import { AnnonceParId } from '../api/annonces'
-import EnvoyerMessage from '../components/EnvoyerMessage.vue'
 export default {
     name: 'DetailAnnonce',
     data() {
         return {
+            user: "",
             id: "",
             annonce: {},
-            messageForm: false
+            messageForm: false,
+            chatboxEllipsesOutline,
+            message: {
+                contenu: "",
+                expediteur: "",
+                destinataire: "",
+                annonce: "",
+                date_envoi: ""
+            }
         }
     },
     components: {
         BaseLayout,
-        EnvoyerMessage,
         IonCard,
         IonCardContent,
         IonCardTitle,
         IonButton,
         IonInput, IonText, IonItem,
-        IonLabel
+        IonLabel, IonBadge, IonIcon
 
     },
     created() {
         // Afficher l'id dans la console
         this.id = this.$route.params.id
         this.ChargeAnnonce()
+        this.user = JSON.parse(sessionStorage.getItem("user"))
+        console.log(this.user)
     },
 
     methods: {
         async ChargeAnnonce() {
             this.annonce = await AnnonceParId(this.id)
-            console.log(this.annonce)
+            console.log(this.user)
         },
         send() {
-            this.messageForm = true
+            this.messageForm = !this.messageForm
+        },
+        async envoyer() {
+            this.message.date_envoi = Date.now()
+            this.message.expediteur = this.user.userId;
+            this.message.destinataire = this.annonce.proprietaire;
+            this.message.annonce = this.annonce._id
+            console.log("message", this.message)
+            try {
+                await envoyerMessage(this.message)
+                this.message.contenu = "";
+                console.log("succès")
+            } catch (error) {
+                console.log(error)
+            }
         }
         /*  ouvrirModal() {
  

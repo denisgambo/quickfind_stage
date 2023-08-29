@@ -28,13 +28,15 @@
             <!-- Menu déroulant Ionic -->
             <div class="menu" v-if="user">
                 <ion-list v-show="isDropdownOpen">
-                    <ion-item button @click="navigateTo('/page1')">Déconnexion</ion-item>
+                    <ion-item :router-link="`/profil/${user.userId}`" v-if="user"> Mon profil</ion-item>
+
                     <ion-item button @click="navigateTo('/vendeur/dasbord')" v-if="user && user.statut === 'vendeur'">Gérer
                         mes
                         annonces</ion-item>
                     <ion-item button @click="navigateTo('/annonce/publier')"
                         v-if="user && user.statut === 'vendeur'">Publier une
                         annonce</ion-item>
+                    <ion-item button @click="deconnexion()">Déconnexion</ion-item>
                     <!-- Ajoutez d'autres options selon vos besoins -->
                 </ion-list>
             </div>
@@ -99,6 +101,11 @@ export default {
         navigateTo(path) {
             this.$router.push(path);
             this.isDropdownOpen = false;
+        },
+        deconnexion() {
+            sessionStorage.removeItem("user")
+            this.$router.push("/connexion");
+
         }
     }
 };
