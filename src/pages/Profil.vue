@@ -20,8 +20,8 @@
                     </div>
 
                     <div class="infos">
-                        <ion-badge color="warning">10</ion-badge>
-                        <p>Vendeur</p>
+                        <!-- <ion-badge color="warning">10</ion-badge> -->
+                        <p>{{ user.statut }}</p>
                     </div>
                 </div>
             </div>
@@ -45,7 +45,9 @@
 
 <script>
 import { IonPage, IonContent, IonToolbar, IonButtons, IonBackButton, IonHeader, IonTitle, IonBadge, IonCard } from '@ionic/vue';
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
     props: ['userId'],
     components: {
         IonPage, IonContent, IonHeader,
@@ -60,7 +62,7 @@ export default {
     created() {
         this.user = JSON.parse(sessionStorage.getItem("user"))
     }
-}
+})
 </script>
 
 <style scoped>

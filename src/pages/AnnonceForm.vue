@@ -3,15 +3,18 @@
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-back-button></ion-back-button>
+                    <ion-back-button default-href="/"></ion-back-button>
                 </ion-buttons>
                 <ion-title>Faire une annonce</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content>
-            <h2 class="bg-light border rounded p-0 mt-2 mb-0 tt text-center ">Nouveau produit</h2>
+            <ion-item v-if="user.statut === 'client'">
+                <ion-label> <a href="/inscription">S'Inscrire en que vendeur pour publier</a></ion-label>
+            </ion-item>
+            <!-- <h2 class="bg-light border rounded p-0 mt-2 mb-0 tt text-center ">Nouveau produit</h2> -->
 
-            <div class="form-container ion-justify-content-center">
+            <div class="form-container ion-justify-content-center" v-if="user.statut === 'vendeur'">
 
                 <form @submit.prevent="envoyerAnnonce()" enctype="multipart/form-data">
                     <ion-item class="ion-margin-bottom">
@@ -21,6 +24,7 @@
                             placeholder="Non du produit ou du service"></ion-input>
                     </ion-item>
                     <ion-item class="ion-margin-bottom">
+                        *
                         <!-- <ion-label position="floating">Catégorie</ion-label> -->
                         <ion-select v-model="annonce.type">
                             <ion-select-option disabled selected value="">Sélectionnez un type</ion-select-option>
@@ -55,15 +59,15 @@
 
                         </div>
                     </ion-item>
-                    <ion-item class="ion-margin-bottom">
+                    <ion-item class="ion-margin-bottom" v-if="annonce.en_vente">
                         <!-- <ion-label position="floating">Mot de passe</ion-label> -->
-                        <ion-input v-model="annonce.prix_vente" label="Prix de vente" type="number"
+                        <ion-input v-model="annonce.prix_vente" label="* Prix de vente" type="number"
                             placeholder="ex: 2000"></ion-input>
 
                     </ion-item>
-                    <div class="infos_location">
+                    <div class="infos_location" v-if="annonce.en_location">
                         <ion-item class="ion-margin-bottom">
-                            <ion-input v-model="annonce.prix_location" label="Prix de location" type="number"
+                            <ion-input v-model="annonce.prix_location" label="* Prix de location" type="number"
                                 placeholder="ex:2000"></ion-input>
                         </ion-item>
                         <ion-item>
@@ -72,21 +76,23 @@
                         </ion-item>
                     </div>
                     <ion-item class="ion-margin-bottom">
-                        <ion-input v-model="annonce.adresse" label="Adresse ex: Ouagadougou, secteur 52" type="text"
-                            placeholder="Votre adresse"></ion-input>
+                        <ion-input v-model="annonce.adresse" label="*" type="text"
+                            placeholder="Votre adresse ex: Ouagadougou, secteur 52"></ion-input>
 
                     </ion-item>
 
                     <ion-item class="ion-margin-bottom">
                         <!-- <ion-label position="floating">Description</ion-label> -->
-                        <ion-textarea v-model="annonce.description" label="Description"
+                        <ion-label>Description</ion-label><br>
+                        <ion-textarea v-model="annonce.description" label="*"
                             placeholder="Donnez une description de votre produit. Ex: Une robe en peau de caiman"></ion-textarea>
                     </ion-item>
 
-                    <ion-item class="ion-margin-bottom">
+                    <ion-item class="ion-margin-bottom" v-if="annonce.type == 'produit' || annonce.type == 'immobilier'">
                         <!-- <ion-label position="floating">Description</ion-label> -->
-                        <ion-textarea v-model="annonce.caracteristique" label="Caractéristiques physiques"
-                            placeholder="ex: rouge, long"></ion-textarea>
+                        <ion-label>Caractéristiques physiques</ion-label>
+                        <ion-textarea v-model="annonce.caracteristique" label=""
+                            placeholder="ex: couleur, taille"></ion-textarea>
                     </ion-item>
                     <ion-item class="ion-margin-bottom">
                         <ion-input type="file" name="photo" label="Photo du produit"
@@ -95,7 +101,7 @@
                     </ion-item>
 
 
-                    <ion-button type="submit" class="button" color="secondary">Envoyer</ion-button>
+                    <ion-button type="submit" class="button" color="secondary">Publier</ion-button>
 
 
                 </form>
@@ -109,11 +115,11 @@
 
 <script>
 
-import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonButtons, IonBackButton } from '@ionic/vue';
+import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonCheckbox, IonTextarea, IonSelect, IonSelectOption, IonButtons, IonBackButton, alertController } from '@ionic/vue';
 import { logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
-import router from '../router';
+import { defineComponent } from 'vue';
 import axios from 'axios'
-export default {
+export default defineComponent({
     components: {
         IonPage,
         IonHeader,
@@ -128,13 +134,17 @@ export default {
         IonImg,
         IonIcon, IonButtons, IonBackButton,
         IonCheckbox, IonTextarea,
-        IonSelect, IonSelectOption
+        IonSelect, IonSelectOption,
+
+
     },
     data() {
         return {
             logoGoogle,
             logoFacebook,
             logoTwitter,
+
+
             user: {},
             annonce: {
                 titre: "",
@@ -167,6 +177,15 @@ export default {
             this.annonce.photo = selectedFile;
             // console.log("Fichier sélectionné :", selectedFile);
         },
+        async presentAlert(error_message, header, subHeader) {
+            const alert = await alertController.create({
+                header: header,
+                subHeader: subHeader,
+                message: error_message,
+                buttons: ['OK'],
+            });
+            await alert.present();
+        },
         updateEnVente(event) {
             this.annonce.en_vente = event.detail.checked;
         },
@@ -177,6 +196,23 @@ export default {
             // Convertir les valeurs de en_vente et en_location en booléens
             /* his.annonce.en_vente = this.annonce.en_vente === "true";
             this.annonce.en_location = this.annonce.en_location === "true"; */
+            if (this.annonce.titre.length < 2 || this.annonce.description.length < 5 || !this.annonce.photo || !this.annonce.categorie || !this.annonce.type || !this.annonce.adresse) {
+                await this.presentAlert("Les champs précédés de * sont obligatoires", "Erreur", "Formulaire invalide")
+                return
+            }
+            if (this.annonce.en_location) {
+                if (!this.annonce.prix_location || !this.annonce.duree_location) {
+                    await this.presentAlert("Les champs précédés de * sont obligatoires", "Erreur", "Formulaire invalide")
+                    return
+                }
+            }
+            if (this.annonce.en_vente) {
+                if (!this.annonce.prix_vente) {
+                    await this.presentAlert("Les champs précédés de * sont obligatoires", "Erreur", "Formulaire invalide")
+                    return
+                }
+
+            }
             try {
                 const formData = new FormData();
                 // Ajoutez les champs de l'annonce au FormData
@@ -206,8 +242,7 @@ export default {
 
                 // Redirigez après l'envoi de l'annonce
                 // router.push({ name: 'Annonces' });
-                alert("succès")
-
+                await this.presentAlert("Enregistré avce succès", "Réussir", "Félicitation")
             } catch (error) {
                 console.error('Erreur lors de l\'envoi de l\'annonce :', error);
             }
@@ -220,7 +255,7 @@ export default {
 
 
     },
-};
+});
 </script>
 
 <style scoped>

@@ -26,15 +26,13 @@
 
         <ion-content>
             <!-- Menu déroulant Ionic -->
-            <div class="menu" v-if="user">
+            <div class="menu" v-if="user" slot="fixed">
                 <ion-list v-show="isDropdownOpen">
                     <ion-item :router-link="`/profil/${user.userId}`" v-if="user"> Mon profil</ion-item>
 
-                    <ion-item button @click="navigateTo('/vendeur/dasbord')" v-if="user && user.statut === 'vendeur'">Gérer
-                        mes
-                        annonces</ion-item>
-                    <ion-item button @click="navigateTo('/annonce/publier')"
-                        v-if="user && user.statut === 'vendeur'">Publier une
+                    <ion-item button @click="navigateTo('/vendeur/dasbord')" v-if="user">Mon
+                        tableau de bord</ion-item>
+                    <ion-item button @click="navigateTo('/publier')" v-if="user && user.statut === 'vendeur'">Publier une
                         annonce</ion-item>
                     <ion-item button @click="deconnexion()">Déconnexion</ion-item>
                     <!-- Ajoutez d'autres options selon vos besoins -->
@@ -63,7 +61,7 @@
         </ion-content>
         <ion-footer>
             <ion-toolbar>
-                <ion-title>QuickFind v1.0</ion-title>
+                <ion-title>QuickFind v1.0 <p> <small>&copy; 2023 Denis GAMBO. Tous droits réservés.</small></p></ion-title>
             </ion-toolbar>
         </ion-footer>
     </ion-page>

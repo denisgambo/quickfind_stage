@@ -13,4 +13,15 @@ async function envoyerMessage(message) {
     }
 }
 
-export {envoyerMessage};
+
+async function messageParDestinataire(destinataire) {
+    try {
+        const response = await axios.get(`${API_URL}/messages/message_par_destinataire?destinataire=${destinataire}`);
+        return response.data.messages;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des messages:', error);
+        throw error;
+    }
+}
+
+export {envoyerMessage, messageParDestinataire};

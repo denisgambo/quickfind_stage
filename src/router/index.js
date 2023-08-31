@@ -45,12 +45,12 @@ const routes = [
     prop:true,
     component:()=> import ('../pages/Immobilier.vue')
   },
-  {
+ /*  {
     path:'/annonce/publier',
     name:'CreerAnnonce',
     prop:true,
     component:()=> import ('../pages/AnnonceForm.vue')
-  },
+  }, */
    {
     path:'/devenir-vendeur',
     name:'Paiement',
@@ -61,7 +61,38 @@ const routes = [
     path:'/vendeur/dasbord',
     name:'DashbordVendeur',
     prop:true,
-    component:()=> import ('../pages/DashbordVendeur.vue')
+    component:()=> import ('../pages/DashbordVendeur.vue'),
+    children: [
+      {
+        path: '/vendeur/dasbord',
+        redirect: '/mes-annonces',
+      },
+    
+      {
+        path: '/mes-annonces',
+        name:"GestionAnnonces",
+        component: () => import('../pages/GestionAnnonces.vue'),
+      },
+      {
+        path: '/mes-messages',
+        name:"MesMessages",
+        component: () => import('../pages/Messages.vue'),
+      },
+      {
+          path:'/publier',
+          name:'CreerAnnonce',
+          prop:true,
+          component:()=> import ('../pages/AnnonceForm.vue')
+        },
+     /*  {
+        path: 'library',
+        component: () => import('./views/LibraryPage.vue'),
+      },
+      {
+        path: 'search',
+        component: () => import('./views/SearchPage.vue'),
+      }, */
+    ],
   },
 
    {

@@ -18,8 +18,9 @@
                     <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                         vendeur</router-link>
                     <!-- Ajouter router-link sur ion-card -->
-                    <ion-card :router-link="`/annonces/${ann._id}`">
+                    <ion-card @click="detail()">
 
+                        <!-- :router-link="`/annonces/${ann._id}`" -->
 
 
                         <!-- <ion-img :src="ann.image"></ion-img> -->
@@ -32,7 +33,7 @@
                                 </h2>
                             </ion-text>
                             <!-- Ajouter router-link sur ion-button -->
-                            <ion-button fill="clear" :router-link="`/annonces/${ann.id}`">Voir</ion-button>
+                            <ion-button fill="clear" @click="detail()">Voir</ion-button>
 
                         </ion-card-content>
                     </ion-card>
@@ -43,11 +44,13 @@
 </template>
 
 <script>
-import { IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText } from '@ionic/vue';
+import { IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText, alertController } from '@ionic/vue';
 import { trashBin } from 'ionicons/icons';
+import { defineComponent } from 'vue';
 
 import { ToutesAnnonces } from '../api/annonces'
-export default {
+import router from '../router';
+export default defineComponent({
     name: "Annonces",
     components: {
         IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText
@@ -73,10 +76,28 @@ export default {
         async chargerToutesAnnonces() {
             this.toutesAnnonces = await ToutesAnnonces()
             console.log(this.toutesAnnonces)
+        },
+        async presentAlert(error_message, header) {
+            const alert = await alertController.create({
+                header: header,
+                message: error_message,
+                buttons: ['OK'],
+            });
+            await alert.present();
+        },
+
+        async detail() {
+            if (this.user) {
+                router.push(`/annonces/${this.user._id}`);
+            } else {
+                await this.presentAlert("Vous devez vous connecter pour voir les détails ", "Oops")
+                return
+            }
         }
+
     }
 
-}
+})
 </script>
 
 <style scoped>

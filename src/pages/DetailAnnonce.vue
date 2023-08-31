@@ -79,7 +79,9 @@ import { IonCard, IonCardContent, IonCardTitle, IonButton, IonInput, IonText, Io
 import { chatboxEllipsesOutline } from 'ionicons/icons'
 import BaseLayout from '../components/Base/BaseLayout.vue'
 import { AnnonceParId } from '../api/annonces'
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
     name: 'DetailAnnonce',
     data() {
         return {
@@ -146,7 +148,7 @@ export default {
          } */
     }
 
-}
+})
 </script>
 
 <style scoped>
