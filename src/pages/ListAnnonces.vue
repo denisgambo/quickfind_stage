@@ -7,14 +7,16 @@
             <router-link :to="{ name: 'Immobiliers' }" class="nav-link nav-link-active">Immobilier</router-link>
         </div>
         <div class="search">
-            <ion-searchbar show-clear-button="focus" value=""></ion-searchbar>
+            <ion-searchbar show-clear-button="focus" value="" v-model="search"></ion-searchbar>
+            <h2 v-if="annoncesSearch.length == 0">Aucun resultat</h2>
 
             <!-- <input type="search" placeholder="Rechercher" class="custom_input"> -->
             <!-- <ion-input type="text" label="Recherche" class="rounded custom_input"></ion-input> -->
         </div>
         <ion-grid>
             <ion-row>
-                <ion-col size="6" size-md="6" size-lg="4" v-for="ann in toutesAnnonces" :key="ann._id">
+
+                <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annoncesSearch" :key="ann._id">
                     <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                         vendeur</router-link>
                     <!-- Ajouter router-link sur ion-card -->
@@ -59,7 +61,8 @@ export default defineComponent({
         return {
             user: {},
             trashBin,
-            toutesAnnonces: []
+            toutesAnnonces: [],
+            search: ""
         }
     },
     created() {
@@ -67,11 +70,14 @@ export default defineComponent({
         this.user = JSON.parse(sessionStorage.getItem("user"))
 
     },
-    /*   computed: {
-          annonces() {
-              return this.$store.state.annonces;
-          }
-      }, */
+    computed: {
+        annoncesSearch() {
+
+            return this.toutesAnnonces.filter((annonce) => {
+                return annonce.titre.toLowerCase().includes(this.search.toLocaleLowerCase())
+            })
+        },
+    },
     methods: {
         async chargerToutesAnnonces() {
             this.toutesAnnonces = await ToutesAnnonces()

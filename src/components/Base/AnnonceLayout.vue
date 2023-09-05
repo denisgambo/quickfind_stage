@@ -45,11 +45,10 @@
                 <router-link :to="{ name: 'Immobiliers' }" class="nav-link nav-link-active">Immobilier</router-link>
             </div>
 
-            <div class="search">
-                <ion-searchbar show-clear-button="focus" value=""></ion-searchbar>
+            <!--    <div class="search">
+                <ion-searchbar show-clear-button="focus" value="ll"></ion-searchbar>
 
-                <!-- <input type="search" placeholder="Rechercher" class="custom_input"> -->
-            </div>
+            </div> -->
             <main>
                 <!-- <router-view /> -->
             </main>

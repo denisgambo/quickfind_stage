@@ -1,6 +1,13 @@
 <template>
     <annonce-layout>
-        <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annonces" :key="ann._id">
+        <div class="search">
+            <ion-searchbar show-clear-button="focus" value="" v-model="search"></ion-searchbar>
+            <h2 v-if="annoncesSearch.length == 0">Aucun resultat</h2>
+
+            <!-- <input type="search" placeholder="Rechercher" class="custom_input"> -->
+            <!-- <ion-input type="text" label="Recherche" class="rounded custom_input"></ion-input> -->
+        </div>
+        <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annoncesSearch" :key="ann._id">
             <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                 vendeur</router-link>
             <!-- Ajouter router-link sur ion-card -->
@@ -25,7 +32,7 @@
 
 <script>
 import { ToutesAnnoncesProduits } from '../api/annonces';
-import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle, IonText, alertController } from '@ionic/vue';
+import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle, IonText, alertController, IonSearchbar } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import router from '../router';
 
@@ -34,7 +41,8 @@ export default defineComponent({
     data() {
         return {
             user: {},
-            annonces: []
+            annonces: [],
+            search: "",
         }
     },
     components: {
@@ -45,23 +53,26 @@ export default defineComponent({
         IonCardContent,
         IonGrid, IonRow, IonCol,
         IonCardTitle,
-        IonText
+        IonText, IonSearchbar
 
     },
     created() {
         this.chargerProduits(),
             this.user = JSON.parse(sessionStorage.getItem("user"))
-        console.log("user: ", this.user)
+        // console.log("user: ", this.user)
     },
-    /*  computed: {
-         annonces() {
-             return this.$store.state.annonces;
-         }
-     }, */
+    computed: {
+        annoncesSearch() {
+
+            return this.annonces.filter((annonce) => {
+                return annonce.titre.toLowerCase().includes(this.search.toLocaleLowerCase())
+            })
+        },
+    },
     methods: {
         async chargerProduits() {
             this.annonces = await ToutesAnnoncesProduits()
-            console.log(this.annonces)
+            // console.log(this.annonces)
         },
         async presentAlert(error_message, header) {
             const alert = await alertController.create({
@@ -102,5 +113,17 @@ ion-card>img {
     ion-card>img {
         height: 150px;
     }
+}
+
+ion-searchbar {
+    --ion-background-color: aliceblue;
+    --border-radius: 10px;
+}
+
+.search {
+    width: 90%;
+    margin: 10px auto;
+
+
 }
 </style>
