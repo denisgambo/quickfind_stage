@@ -18,7 +18,7 @@
                     <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                         vendeur</router-link>
                     <!-- Ajouter router-link sur ion-card -->
-                    <ion-card @click="detail()">
+                    <ion-card @click="detail(ann._id)">
 
                         <!-- :router-link="`/annonces/${ann._id}`" -->
 
@@ -33,7 +33,7 @@
                                 </h2>
                             </ion-text>
                             <!-- Ajouter router-link sur ion-button -->
-                            <ion-button fill="clear" @click="detail()">Voir</ion-button>
+                            <ion-button fill="clear" @click="detail(ann._id)">Voir</ion-button>
 
                         </ion-card-content>
                     </ion-card>
@@ -86,9 +86,9 @@ export default defineComponent({
             await alert.present();
         },
 
-        async detail() {
+        async detail(id) {
             if (this.user) {
-                router.push(`/annonces/${this.user._id}`);
+                router.push(`/annonces/${id}`);
             } else {
                 await this.presentAlert("Vous devez vous connecter pour voir les détails ", "Oops")
                 return

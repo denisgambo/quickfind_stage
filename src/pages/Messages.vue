@@ -19,7 +19,30 @@
                     <ion-label v-if="messages.length === 0">Vous n'avez pas de messages</ion-label>
                 </ion-item>
             </div>
-            <ion-list>
+            <ion-card v-for="message in messages" :key="message._id">
+                <ion-item>
+                    <ion-thumbnail slot="start">
+                        <img alt="image profil" :src="message.expediteur.photo_profil" />
+                    </ion-thumbnail>
+                    <ion-card-title>
+                        {{ message.expediteur.nom }} {{ message.expediteur.prenom }}
+                    </ion-card-title>
+                </ion-item>
+                <ion-item>
+
+                    <h3>{{ message.contenu }}</h3>
+
+                </ion-item>
+                <ion-item>
+                    Eenvoyé le {{ message.date_envoi }}
+
+                </ion-item>
+                <ion-item>
+                    <ion-button fill="clear" @click="RepondreMessage(message)">Répondre</ion-button>
+                    <ion-button fill="clear" @click="Supprimer(message._id)">Supprimer</ion-button>
+                </ion-item>
+            </ion-card>
+            <!-- <ion-list>
                 <ion-item v-for="message in messages" :key="message._id">
                     <ion-thumbnail slot="start">
                         <img alt="image profil" :src="message.expediteur.photo_profil" />
@@ -33,7 +56,7 @@
                         <ion-button @click="repondre(message)">Répondre</ion-button>
                     </ion-buttons>
                 </ion-item>
-            </ion-list>
+            </ion-list> -->
 
 
         </ion-content>
@@ -41,9 +64,9 @@
 </template>
 
 <script>
-import { messageParDestinataire } from '../api/message';
+import { messageParDestinataire, SupprimerMessage } from '../api/message';
 import { defineComponent } from 'vue';
-
+import { envoyerMessage } from '../api/message';
 import {
     IonPage,
     IonContent,
@@ -56,7 +79,7 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonThumbnail
+    IonThumbnail, IonCard, IonCardContent, IonCardTitle, IonCardHeader, alertController
 } from '@ionic/vue';
 
 export default defineComponent({
@@ -72,12 +95,14 @@ export default defineComponent({
         IonList,
         IonItem,
         IonLabel,
-        IonThumbnail
+        IonThumbnail,
+        IonCard, IonCardContent, IonCardTitle, IonCardHeader
     },
     data() {
         return {
             user: {},
             messages: [],
+            message: ""
         };
     },
 
@@ -110,6 +135,81 @@ export default defineComponent({
             // goes to the top instead of instantly
             this.$refs.content.$el.scrollToTop(500);
         },
+
+        async RepondreMessage(message_a_repondre) {
+            const alert = await alertController.create({
+                header: "Entrez votre message",
+                inputs: [
+                    {
+                        name: 'new_message',
+                        type: 'textarea',
+                        placeholder: 'Votre message'
+                    }
+                ],
+                buttons: [
+                    {
+                        text: 'Annuler',
+                        role: 'cancel'
+                    },
+                    {
+                        text: 'Ok',
+                        handler: async (data) => {
+                            this.message = {
+                                contenu: data.new_message,
+                                expediteur: this.user.userId,
+                                destinataire: message_a_repondre.expediteur._id,
+                                date_envoi: new Date(),
+                                annonce: message_a_repondre.annonce._id
+                            }
+                            // console.log(this.newAvis)
+                            try {
+                                await envoyerMessage(this.message)
+                            } catch (error) {
+                                console.log(error)
+                            }
+                            console.log(data.new_message);
+                            // Do something with the data
+                        }
+                    }
+                ]
+            })
+            await alert.present();
+            const result = await alert.onDidDismiss();
+        },
+
+        async Supprimer(id) {
+            const alert = await alertController.create({
+                header: "Avertissement",
+                message: "Le message sera complètement supprimé",
+                backdropDismiss: false,
+                buttons: [
+                    {
+                        text: 'Annuler',
+                        role: 'cancel',
+                        handler: () => {
+                            // Code à exécuter si l'utilisateur clique sur annuler
+                            console.log('Action annulée');
+                        }
+                    },
+                    {
+                        text: 'Continuer',
+                        role: 'confirm',
+                        handler: async () => {
+                            // Code à exécuter si l'utilisateur clique sur continuer
+                            try {
+                                const response = await SupprimerMessage(id)
+                                this.chargerMessage()
+                                console.log(response)
+                            } catch (error) {
+                                console.log(error)
+                            }
+                            console.log('Action confirmée');
+                        }
+                    }
+                ]
+            });
+            await alert.present();
+        }
     },
 });
 </script>

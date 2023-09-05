@@ -3,9 +3,7 @@
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-back-button></ion-back-button>
-
-
+                    <ion-back-button default-href="/annonces"></ion-back-button>
                 </ion-buttons>
                 <ion-buttons slot="end" v-if="!user">
 

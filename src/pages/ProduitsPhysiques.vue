@@ -4,7 +4,7 @@
             <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                 vendeur</router-link>
             <!-- Ajouter router-link sur ion-card -->
-            <ion-card @click="detail()">
+            <ion-card @click="detail(ann._id)">
                 <!-- <ion-img :src="ann.image"></ion-img> -->
                 <img :src="ann.photo[0]" alt="">
                 <ion-card-title class="ion-text-lg">{{ ann.titre }}</ion-card-title>
@@ -15,7 +15,7 @@
                         </h2>
                     </ion-text>
                     <!-- Ajouter router-link sur ion-button -->
-                    <ion-button fill="clear" @click="detail()">Voir</ion-button>
+                    <ion-button fill="clear" @click="detail(ann._id)">Voir</ion-button>
 
                 </ion-card-content>
             </ion-card>
@@ -27,6 +27,8 @@
 import { ToutesAnnoncesProduits } from '../api/annonces';
 import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle, IonText, alertController } from '@ionic/vue';
 import { defineComponent } from 'vue';
+import router from '../router';
+
 export default defineComponent({
     name: "ProduitsPhysiques",
     data() {
@@ -70,9 +72,9 @@ export default defineComponent({
             await alert.present();
         },
 
-        async detail() {
+        async detail(id) {
             if (this.user) {
-                router.push(`/annonces/${this.user._id}`);
+                router.push(`/annonces/${id}`);
             } else {
                 await this.presentAlert("Vous devez vous connecter pour voir les détails ", "Oops")
                 return

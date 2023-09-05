@@ -60,4 +60,14 @@ async function annonceParUtilisateurs(userId) {
     }
 }
 
-export { ToutesAnnonces, ToutesAnnoncesProduits, ToutesAnnoncesServices,ToutesAnnoncesImmobilier, AnnonceParId, annonceParUtilisateurs };
+async function SupprimerAnnonce(id) {
+    try {
+        const response = await axios.delete(`${API_URL}/annonces/${id}`);
+        return response.data.annonce;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export { ToutesAnnonces, ToutesAnnoncesProduits, ToutesAnnoncesServices,ToutesAnnoncesImmobilier, AnnonceParId, annonceParUtilisateurs, SupprimerAnnonce };

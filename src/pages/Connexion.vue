@@ -2,6 +2,9 @@
     <ion-page class="login-page">
         <ion-header>
             <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-back-button default-href="/annonces"></ion-back-button>
+                </ion-buttons>
                 <ion-title>Se connecter</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -67,7 +70,7 @@
 
 <script>
 import { login } from '../api/user';
-import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonToast } from '@ionic/vue';
+import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonToast, IonButtons, IonBackButton } from '@ionic/vue';
 import { add, logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
 import router from '../router';
 import { defineComponent } from 'vue';

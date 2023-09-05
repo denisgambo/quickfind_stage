@@ -23,5 +23,13 @@ async function messageParDestinataire(destinataire) {
         throw error;
     }
 }
-
-export {envoyerMessage, messageParDestinataire};
+async function SupprimerMessage(id) {
+    try {
+        const response = await axios.delete(`${API_URL}/messages/${id}`);
+        return response.data.message;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+export {envoyerMessage, messageParDestinataire, SupprimerMessage};

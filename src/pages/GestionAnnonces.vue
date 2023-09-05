@@ -37,8 +37,8 @@
                                 annonce.duree_location }}</ion-card-subtitle>
                         </ion-card-header>
 
-                        <ion-button fill="clear">Modifier</ion-button>
-                        <ion-button fill="clear">Supprimer</ion-button>
+                        <ion-button fill="clear" @click="modifier(annonce._id)">Modifier</ion-button>
+                        <ion-button fill="clear" @click="Supprimer(annonce._id)">Supprimer</ion-button>
                     </ion-card>
                 </div>
             </div>
@@ -49,8 +49,10 @@
 </template>
 
 <script>
-import { annonceParUtilisateurs } from '../api/annonces'
-import { IonPage, IonContent, IonHeader, IonToolbar, IonTitle, IonSearchbar, IonButton, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonLabel, IonItem, IonButtons, IonBackButton } from '@ionic/vue';
+import router from '../router';
+
+import { annonceParUtilisateurs, SupprimerAnnonce } from '../api/annonces'
+import { IonPage, IonContent, IonHeader, IonToolbar, IonTitle, IonSearchbar, IonButton, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonLabel, IonItem, IonButtons, IonBackButton, alertController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 export default defineComponent({
     components: {
@@ -82,6 +84,42 @@ export default defineComponent({
             } catch (error) {
                 console.log(error)
             }
+        },
+        async modifier(id) {
+            router.push(`/annonce/modifier/${id}`);
+        },
+        async Supprimer(id) {
+            const alert = await alertController.create({
+                header: "Avertissement",
+                message: "L'annonce sera complètement supprimée",
+                backdropDismiss: false,
+                buttons: [
+                    {
+                        text: 'Annuler',
+                        role: 'cancel',
+                        handler: () => {
+                            // Code à exécuter si l'utilisateur clique sur annuler
+                            console.log('Action annulée');
+                        }
+                    },
+                    {
+                        text: 'Continuer',
+                        role: 'confirm',
+                        handler: async () => {
+                            // Code à exécuter si l'utilisateur clique sur continuer
+                            try {
+                                const response = await SupprimerAnnonce(id)
+                                this.chargerMesAnnonces()
+                                console.log(response)
+                            } catch (error) {
+                                console.log(error)
+                            }
+                            console.log('Action confirmée');
+                        }
+                    }
+                ]
+            });
+            await alert.present();
         }
     }
 })
