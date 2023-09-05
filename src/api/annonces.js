@@ -50,5 +50,24 @@ async function AnnonceParId(id) {
         throw error;
     }
 }
+async function annonceParUtilisateurs(userId) {
+    try {
+        const response = await axios.get(`${API_URL}/annonces/byuser?userId=${userId}`);
+        return response.data.annonces;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des annonces:', error);
+        throw error;
+    }
+}
 
-export { ToutesAnnonces, ToutesAnnoncesProduits, ToutesAnnoncesServices,ToutesAnnoncesImmobilier, AnnonceParId };
+async function SupprimerAnnonce(id) {
+    try {
+        const response = await axios.delete(`${API_URL}/annonces/${id}`);
+        return response.data.annonce;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+export { ToutesAnnonces, ToutesAnnoncesProduits, ToutesAnnoncesServices,ToutesAnnoncesImmobilier, AnnonceParId, annonceParUtilisateurs, SupprimerAnnonce };

@@ -2,6 +2,9 @@
     <ion-page class="login-page">
         <ion-header>
             <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-back-button default-href="/annonces"></ion-back-button>
+                </ion-buttons>
                 <ion-title>Se connecter</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -67,10 +70,12 @@
 
 <script>
 import { login } from '../api/user';
-import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonToast } from '@ionic/vue';
+import { IonPage, IonHeader, IonTitle, IonToolbar, IonContent, IonList, IonItem, IonLabel, IonInput, IonImg, IonButton, IonIcon, IonToast, IonButtons, IonBackButton } from '@ionic/vue';
 import { add, logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
 import router from '../router';
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
     components: {
         IonPage,
         IonHeader,
@@ -106,7 +111,6 @@ export default {
      }, */
     methods: {
         async loginUser() {
-            console.log("login: ", this.email, "pass: ", this.password)
             try {
                 // Ajoutez ici votre logique de connexion
                 this.user = await login(this.email, this.password)
@@ -115,7 +119,11 @@ export default {
                 sessionStorage.setItem('user', JSON.stringify(this.user)); // Utilisation de sessionStorage
                 router.push({ name: 'Annonces' });
             } catch (error) {
-                console.log(error);
+                /*  Swal.fire({
+                     icon: 'error',
+                     title: 'Oops...',
+                     text: 'Login ou mot de passe incorrect',
+                 }) */
                 console.log(error);
                 this.toastMessage = 'Login ou mot de passe incorrect';
                 this.isToastVisible = true; // Afficher le toast
@@ -133,7 +141,7 @@ export default {
             router.push({ name: 'Annonces' })
         } */
     },
-};
+});
 </script>
 
 <style scoped>

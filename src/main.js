@@ -9,7 +9,6 @@ import { IonicVue } from '@ionic/vue';
 import BaseLayout from './components/Base/BaseLayout.vue'
 import AnnonceLayout from './components/Base/AnnonceLayout.vue'
 import MenuHorizontal from './components/MenuHorizontal.vue'
-import EnvoyerMessage from './components/EnvoyerMessage.vue'
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -38,7 +37,6 @@ const app = createApp(App)
   app.component('base-layout', BaseLayout)
   app.component('annonce-layout', AnnonceLayout)
   app.component('menu-horizontal', MenuHorizontal)
-  app.component('envoyer-message', EnvoyerMessage)
   
 router.isReady().then(() => {
   app.mount('#app');

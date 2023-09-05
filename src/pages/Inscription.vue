@@ -8,17 +8,17 @@
                         <ion-col size="6">
                             <!-- Première colonne avec les ion-input -->
                             <ion-item class="ion-margin-bottom rounded ">
-                                <ion-label position="floating">Nom</ion-label>
+                                <ion-label position="floating">* Nom</ion-label>
                                 <ion-input type="text" label="" v-model="user.nom"></ion-input>
                             </ion-item>
 
                             <ion-item class="ion-margin-bottom rounded">
-                                <ion-label position="floating">Téléphone</ion-label>
+                                <ion-label position="floating">* Téléphone</ion-label>
                                 <ion-input type="text" label="" v-model="user.telephone"></ion-input>
                             </ion-item>
 
                             <ion-item class="ion-margin-bottom rounded">
-                                <ion-label position="floating">Login</ion-label>
+                                <ion-label position="floating">* Login</ion-label>
                                 <ion-input type="text" label="" v-model="user.login"></ion-input>
                             </ion-item>
 
@@ -39,7 +39,7 @@
                         <ion-col size="6">
                             <!-- Deuxième colonne avec les ion-input -->
                             <ion-item class="ion-margin-bottom rounded">
-                                <ion-label position="floating">Prénom</ion-label>
+                                <ion-label position="floating">* Prénom</ion-label>
                                 <ion-input type="text" label="" v-model="user.prenom"></ion-input>
                             </ion-item>
 
@@ -48,15 +48,15 @@
                                 <ion-input type="email" label="" v-model="user.email"></ion-input>
                             </ion-item>
                             <ion-item class="ion-margin-bottom rounded">
-                                <ion-label position="floating">Mot de passe</ion-label>
+                                <ion-label position="floating">* Mot de passe</ion-label>
                                 <ion-input type="password" label="" v-model="user.mot_de_passe"></ion-input>
                             </ion-item>
 
 
                             <ion-item class="ion-margin-bottom rounded">
-                                <ion-label position="floating" v-model="confirm_passeword">Confirmer mot de
+                                <ion-label position="floating">* Confirmer mot de
                                     passe</ion-label>
-                                <ion-input type="password" label=""></ion-input>
+                                <ion-input v-model="confirm_passeword" type="password" label=""></ion-input>
                             </ion-item>
 
 
@@ -65,7 +65,7 @@
                     </ion-row>
                 </ion-grid>
                 <ion-item class="ion-margin-bottom">
-                    <ion-label position="floating">Photo profil</ion-label>
+                    <ion-label position="floating">* Photo profil</ion-label>
                     <ion-input type="file" label="" @change="handlePhotoChange"></ion-input>
                 </ion-item>
                 <ion-grid>
@@ -117,17 +117,18 @@
 
 <script>
 import BaseLayout from "../components/Base/BaseLayout.vue";
-import { IonCol, IonRow, IonGrid, IonInput, IonLabel, IonItem, IonRadio, IonRadioGroup, IonButton, IonIcon } from
+import { IonCol, IonRow, IonGrid, IonInput, IonLabel, IonItem, IonRadio, IonRadioGroup, IonButton, IonIcon, alertController } from
     '@ionic/vue';
 import { logoGoogle, logoFacebook, logoTwitter } from "ionicons/icons"
 import axios from 'axios';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "Inscription",
     components: { BaseLayout, IonCol, IonRow, IonGrid, IonInput, IonLabel, IonItem, IonRadio, IonRadioGroup, IonButton, IonIcon },
     data() {
         return {
-            selectedGender: null,
+            selectedGender: "",
             logoGoogle,
             logoFacebook,
             logoTwitter,
@@ -147,12 +148,37 @@ export default {
         };
     },
     methods: {
+        async presentAlert(error_message, header) {
+            const alert = await alertController.create({
+                header: header,
+                message: error_message,
+                buttons: ['OK'],
+            });
+            await alert.present();
+        },
         async submitForm() {
             // Convertir les valeurs booléennes en chaînes pour les valeurs de radio
             this.user.genre = this.selectedGender;
 
             // Créer un objet FormData
             const formData = new FormData();
+
+            //Tester les données
+            if (!this.user.login || !this.user.mot_de_passe || !this.user.nom || !this.user.nom || !this.user.prenom || !this.user.photo_profil) {
+                await this.presentAlert("Les champs précédés de * sont obligatoires", "Erreur")
+                return
+            }
+            if (!this.compare(this.user.mot_de_passe, this.confirm_passeword)) {
+                await this.presentAlert("Les mots de passe doivent correspondre", "Erreur de confirmation")
+                return
+            }
+
+            if (this.user.mot_de_passe.length < 6) {
+                await this.presentAlert("Le mot de passe doit etre au moins de 6 caractères", "Erreur")
+                return
+
+            }
+
 
             // Ajouter les données du formulaire au FormData
             Object.keys(this.user).forEach(key => {
@@ -178,6 +204,7 @@ export default {
                 });
 
                 console.log('Réponse de l\'API:', response.data);
+                await this.presentAlert("Votre compte a été créé", "Félicitaions")
 
                 // Réinitialiser le formulaire
                 this.resetForm();
@@ -193,13 +220,16 @@ export default {
             const selectedFile = event.target.files[0];
             this.user.photo_profil = selectedFile;
         },
+        compare(a, b) {
+            return a === b
+        },
         resetForm() {
             // Réinitialisez les données du formulaire
             this.selectedGender = null;
             // Réinitialisez les autres champs ici
         }
     }
-};
+});
 </script>
 
 

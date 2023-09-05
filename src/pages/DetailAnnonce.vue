@@ -12,6 +12,7 @@
                         annonce.duree_location
                     }}
                     </h1>
+
                     <div class="separator"></div>
                     <!-- <h4 class="moyen">Description du produit</h4> -->
                     <h2> <br> {{ annonce.description }}</h2>
@@ -37,6 +38,8 @@
                         </h1>
                     </ion-item>
 
+
+
                 </ion-text>
                 <!-- <h3 class="text">Prix unitaire: {{ annonce.prix_vente }}</h3>
                 <h3 class="text" v-if="annonce.type == 'produit'">prix de location: {{ annonce.prix_location }} FCFA/{{
@@ -47,55 +50,176 @@
 
             <div class="message" v-if="messageForm">
                 <h2>Envoyer un message</h2>
-                <form class="message_form">
-                    <ion-input label="" placeholder="Ecrire votre message" class="ion-border"></ion-input>
-                    <ion-button>Envoyer</ion-button>
+                <form class="message_form" @submit.prevent="envoyer()">
+                    <ion-input label="" placeholder="Ecrire votre message" class="ion-border"
+                        v-model="message.contenu"></ion-input>
+                    <ion-button type="submit">Envoyer</ion-button>
                 </form>
             </div>
+
+            <ion-item>
+                <div class="avis">
+                    <ion-button fill="clear" size="large" class="" color="light" @click="display_avis = !display_avis">
+                        <!-- {{ avis.length }} -->
+                        {{ nbr }}
+                        <ion-icon :icon="chatboxEllipsesOutline"></ion-icon>
+                        <!-- <ion-badge>11</ion-badge> -->
+                    </ion-button>
+                    <div class="list_avis" v-if="display_avis">
+
+                        <ion-item v-for="avi in avis" :key="avi.id" class="mt-2 item_avi">
+                            <p class="flex-avatar mr-2">
+                                <ion-avatar>
+                                    <img alt="profil" :src="avi.auteur.photo_profil" />
+                                </ion-avatar>
+                                <ion-label>{{ avi.auteur.nom }} {{ avi.auteur.prenom }}</ion-label>
+                            </p>
+                            <p class="avis_message">{{ avi.message }}</p>
+                        </ion-item>
+
+                        <ion-button @click="openCommentaire()">
+                            Commenter
+                        </ion-button>
+                        <!-- <ion-button @click="chargerAvis()">chargerAvis</ion-button> -->
+
+                    </div>
+
+                </div>
+            </ion-item>
         </ion-card>
 
     </base-layout>
 </template>
 
 <script>
-import { IonCard, IonCardContent, IonCardTitle, IonButton, IonInput, IonText, IonItem, IonSegment, IonLabel } from '@ionic/vue'
+import { envoyerMessage } from '../api/message';
+import { envoyerAvis, avisParAnnonce } from '../api/avis'
+import { IonCard, IonCardContent, IonCardTitle, IonButton, IonInput, IonText, IonItem, IonLabel, IonBadge, IonIcon, alertController, IonAvatar } from '@ionic/vue'
+import { chatboxEllipsesOutline } from 'ionicons/icons'
 import BaseLayout from '../components/Base/BaseLayout.vue'
 import { AnnonceParId } from '../api/annonces'
-import EnvoyerMessage from '../components/EnvoyerMessage.vue'
-export default {
+import { defineComponent } from 'vue';
+
+export default defineComponent({
     name: 'DetailAnnonce',
     data() {
         return {
+            user: "",
             id: "",
             annonce: {},
-            messageForm: false
+            display_avis: false,
+            messageForm: false,
+            chatboxEllipsesOutline,
+            newAvis: {
+                message: "",
+                auteur: "",
+                annonce: "",
+                date_envoi: ""
+            },
+            message: {
+                contenu: "",
+                expediteur: "",
+                destinataire: "",
+                annonce: "",
+                date_envoi: ""
+            },
+            avis: [],
+            nbr: 0,
         }
     },
     components: {
         BaseLayout,
-        EnvoyerMessage,
         IonCard,
         IonCardContent,
         IonCardTitle,
         IonButton,
         IonInput, IonText, IonItem,
-        IonLabel
+        IonLabel, IonBadge, IonIcon, IonAvatar
+
 
     },
-    created() {
+    async created() {
         // Afficher l'id dans la console
         this.id = this.$route.params.id
-        this.ChargeAnnonce()
+        await this.ChargeAnnonce()
+        this.user = JSON.parse(sessionStorage.getItem("user"))
+        // console.log(this.user)
     },
 
     methods: {
         async ChargeAnnonce() {
             this.annonce = await AnnonceParId(this.id)
             console.log(this.annonce)
+            await this.chargerAvis()
+
         },
-        send() {
-            this.messageForm = true
+        async send() {
+            this.messageForm = !this.messageForm
+        },
+        async chargerAvis() {
+            try {
+                this.avis = await avisParAnnonce(this.annonce._id)
+                this.nbr = this.avis.length
+                console.log(this.avis, "nombre: ", this.nbr)
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async envoyer() {
+            this.message.date_envoi = Date.now()
+            this.message.expediteur = this.user.userId;
+            this.message.destinataire = this.annonce.proprietaire;
+            this.message.annonce = this.annonce._id
+            // console.log("message", this.message)
+            try {
+                await envoyerMessage(this.message)
+                this.message.contenu = "";
+                // console.log("succès")
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async openCommentaire() {
+            const alert = await alertController.create({
+                header: "Entrez votre commentaire",
+                inputs: [
+                    {
+                        name: 'contenu_avi',
+                        type: 'textarea',
+                        placeholder: 'Commentaire'
+                    }
+                ],
+                buttons: [
+                    {
+                        text: 'Annuler',
+                        role: 'cancel'
+                    },
+                    {
+                        text: 'Ok',
+                        handler: async (data) => {
+                            this.newAvis = {
+                                message: data.contenu_avi,
+                                auteur: this.user.userId,
+                                date_envoi: new Date(),
+                                annonce: this.annonce._id
+                            }
+                            // console.log(this.newAvis)
+                            try {
+                                await envoyerAvis(this.newAvis)
+                                await this.chargerAvis()
+                            } catch (error) {
+                                console.log(error)
+                            }
+                            console.log(data.contenu_avi);
+                            // Do something with the data
+                        }
+                    }
+                ]
+            })
+            await alert.present();
+            const result = await alert.onDidDismiss();
         }
+
         /*  ouvrirModal() {
  
              this.modalVisible = true
@@ -105,7 +229,7 @@ export default {
          } */
     }
 
-}
+})
 </script>
 
 <style scoped>
@@ -144,5 +268,15 @@ ion-item {
 .separator {
     border-top: 3px solid orange;
     margin: 10px 0;
+}
+
+.item_avi {
+    --background: rgb(232, 232, 241);
+    --border-radius: 5px;
+    --width: 100%;
+}
+
+.list_avis {
+    width: 100%;
 }
 </style>

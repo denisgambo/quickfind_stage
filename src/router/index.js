@@ -45,23 +45,68 @@ const routes = [
     prop:true,
     component:()=> import ('../pages/Immobilier.vue')
   },
-  {
+ /*  {
     path:'/annonce/publier',
     name:'CreerAnnonce',
     prop:true,
     component:()=> import ('../pages/AnnonceForm.vue')
-  },
+  }, */
    {
     path:'/devenir-vendeur',
     name:'Paiement',
     prop:true,
     component:()=> import ('../pages/Paiement.vue')
   },
+
+     {
+    path:'/annonce/modifier/:id',
+    name:'ModifierAnonnce',
+    prop:true,
+    component:()=> import ('../pages/ModifierAnnonce.vue')
+  },
   {
     path:'/vendeur/dasbord',
     name:'DashbordVendeur',
     prop:true,
-    component:()=> import ('../pages/DashbordVendeur.vue')
+    component:()=> import ('../pages/DashbordVendeur.vue'),
+    children: [
+      {
+        path: '/vendeur/dasbord',
+        redirect: '/mes-annonces',
+      },
+    
+      {
+        path: '/mes-annonces',
+        name:"GestionAnnonces",
+        component: () => import('../pages/GestionAnnonces.vue'),
+      },
+      {
+        path: '/mes-messages',
+        name:"MesMessages",
+        component: () => import('../pages/Messages.vue'),
+      },
+      {
+          path:'/publier',
+          name:'CreerAnnonce',
+          prop:true,
+          component:()=> import ('../pages/AnnonceForm.vue')
+        },
+     /*  {
+        path: 'library',
+        component: () => import('./views/LibraryPage.vue'),
+      },
+      {
+        path: 'search',
+        component: () => import('./views/SearchPage.vue'),
+      }, */
+    ],
+  },
+
+   {
+    path:'/profil/:id',
+    name:'Profil',
+    prop:true,
+    component:()=> import ('../pages/Profil.vue')
   },
   
 ]

@@ -7,19 +7,22 @@
             <router-link :to="{ name: 'Immobiliers' }" class="nav-link nav-link-active">Immobilier</router-link>
         </div>
         <div class="search">
-            <ion-searchbar show-clear-button="focus" value=""></ion-searchbar>
+            <ion-searchbar show-clear-button="focus" value="" v-model="search"></ion-searchbar>
+            <h2 v-if="annoncesSearch.length == 0">Aucun resultat</h2>
 
             <!-- <input type="search" placeholder="Rechercher" class="custom_input"> -->
             <!-- <ion-input type="text" label="Recherche" class="rounded custom_input"></ion-input> -->
         </div>
         <ion-grid>
             <ion-row>
-                <ion-col size="6" size-md="6" size-lg="4" v-for="ann in toutesAnnonces" :key="ann._id">
+
+                <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annoncesSearch" :key="ann._id">
                     <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                         vendeur</router-link>
                     <!-- Ajouter router-link sur ion-card -->
-                    <ion-card :router-link="`/annonces/${ann._id}`">
+                    <ion-card @click="detail(ann._id)">
 
+                        <!-- :router-link="`/annonces/${ann._id}`" -->
 
 
                         <!-- <ion-img :src="ann.image"></ion-img> -->
@@ -32,7 +35,7 @@
                                 </h2>
                             </ion-text>
                             <!-- Ajouter router-link sur ion-button -->
-                            <ion-button fill="clear" :router-link="`/annonces/${ann.id}`">Voir</ion-button>
+                            <ion-button fill="clear" @click="detail(ann._id)">Voir</ion-button>
 
                         </ion-card-content>
                     </ion-card>
@@ -43,11 +46,13 @@
 </template>
 
 <script>
-import { IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText } from '@ionic/vue';
+import { IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText, alertController } from '@ionic/vue';
 import { trashBin } from 'ionicons/icons';
+import { defineComponent } from 'vue';
 
 import { ToutesAnnonces } from '../api/annonces'
-export default {
+import router from '../router';
+export default defineComponent({
     name: "Annonces",
     components: {
         IonCard, IonCol, IonCardTitle, IonCardContent, IonButton, IonGrid, IonRow, IonInput, IonSearchbar, IonButtons, IonText
@@ -56,7 +61,8 @@ export default {
         return {
             user: {},
             trashBin,
-            toutesAnnonces: []
+            toutesAnnonces: [],
+            search: ""
         }
     },
     created() {
@@ -64,19 +70,40 @@ export default {
         this.user = JSON.parse(sessionStorage.getItem("user"))
 
     },
-    /*   computed: {
-          annonces() {
-              return this.$store.state.annonces;
-          }
-      }, */
+    computed: {
+        annoncesSearch() {
+
+            return this.toutesAnnonces.filter((annonce) => {
+                return annonce.titre.toLowerCase().includes(this.search.toLocaleLowerCase())
+            })
+        },
+    },
     methods: {
         async chargerToutesAnnonces() {
             this.toutesAnnonces = await ToutesAnnonces()
             console.log(this.toutesAnnonces)
+        },
+        async presentAlert(error_message, header) {
+            const alert = await alertController.create({
+                header: header,
+                message: error_message,
+                buttons: ['OK'],
+            });
+            await alert.present();
+        },
+
+        async detail(id) {
+            if (this.user) {
+                router.push(`/annonces/${id}`);
+            } else {
+                await this.presentAlert("Vous devez vous connecter pour voir les détails ", "Oops")
+                return
+            }
         }
+
     }
 
-}
+})
 </script>
 
 <style scoped>

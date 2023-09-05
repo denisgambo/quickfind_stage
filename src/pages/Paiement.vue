@@ -3,7 +3,7 @@
         <ion-header>
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-back-button></ion-back-button>
+                    <ion-back-button default-href="/"></ion-back-button>
                     <ion-title>Devenir vendeur</ion-title>
                 </ion-buttons>
             </ion-toolbar>
@@ -23,14 +23,15 @@
 
 <script>
 import { IonPage, IonContent, IonHeader, IonButton, IonButtons, IonBackButton, IonToolbar, IonTitle, IonInput } from '@ionic/vue';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "Paiement",
     components: {
         IonPage, IonContent, IonHeader, IonButton, IonButtons, IonBackButton, IonToolbar, IonTitle, IonInput
     }
 
-}
+})
 </script>
 
 <style scoped>

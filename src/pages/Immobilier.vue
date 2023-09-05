@@ -1,11 +1,17 @@
 <template>
     <annonce-layout>
+        <div class="search">
+            <ion-searchbar show-clear-button="focus" value="" v-model="search"></ion-searchbar>
+            <h2 v-if="annoncesSearch.length == 0">Aucun resultat</h2>
 
-        <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annonces" :key="ann.id">
+            <!-- <input type="search" placeholder="Rechercher" class="custom_input"> -->
+            <!-- <ion-input type="text" label="Recherche" class="rounded custom_input"></ion-input> -->
+        </div>
+        <ion-col size="6" size-md="6" size-lg="4" v-for="ann in annoncesSearch" :key="ann.id">
             <router-link :to="{ name: 'Paiement' }" class="" v-if="user && user.statut === 'client'">Devenir
                 vendeur</router-link>
             <!-- Ajouter router-link sur ion-card -->
-            <ion-card :router-link="`/annonces/${ann._id}`">
+            <ion-card @click="detail(ann._id)">
                 <!-- <ion-img :src="ann.image"></ion-img> -->
                 <img :src="ann.photo[0]" alt="">
                 <ion-card-title>{{ ann.title }}</ion-card-title>
@@ -16,7 +22,7 @@
                         </h2>
                     </ion-text>
                     <!-- Ajouter router-link sur ion-button -->
-                    <ion-button fill="clear" :router-link="`/annonces/${ann._id}`">Voir</ion-button>
+                    <ion-button fill="clear" @click="detail(ann._id)">Voir</ion-button>
 
                 </ion-card-content>
             </ion-card>
@@ -26,8 +32,11 @@
 
 <script>
 import { ToutesAnnoncesImmobilier } from '../api/annonces';
-import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle, IonText } from '@ionic/vue';
-export default {
+import { IonPage, IonContent, IonButton, IonCard, IonCardContent, IonGrid, IonRow, IonCol, IonCardTitle, IonText, alertController, IonSearchbar } from '@ionic/vue';
+import { defineComponent } from 'vue';
+import router from '../router';
+
+export default defineComponent({
     name: "Immobiliers",
     components: {
         IonContent,
@@ -36,14 +45,24 @@ export default {
         IonCard,
         IonCardContent,
         IonGrid, IonRow, IonCol,
-        IonCardTitle, IonText
+        IonCardTitle, IonText,
+        IonSearchbar
 
     },
     data() {
         return {
-            annonces: "",
-            user: {}
+            annonces: [],
+            user: {},
+            search: ""
         }
+    },
+    computed: {
+        annoncesSearch() {
+
+            return this.annonces.filter((annonce) => {
+                return annonce.titre.toLowerCase().includes(this.search.toLocaleLowerCase())
+            })
+        },
     },
     created() {
         this.user = JSON.parse(sessionStorage.getItem("user"))
@@ -58,11 +77,28 @@ export default {
     methods: {
         async chargerToutesAnnonces() {
             this.annonces = await ToutesAnnoncesImmobilier()
-            console.log("immo", this.annonces)
+            // console.log("immo", this.annonces)
+        },
+        async presentAlert(error_message, header) {
+            const alert = await alertController.create({
+                header: header,
+                message: error_message,
+                buttons: ['OK'],
+            });
+            await alert.present();
+        },
+
+        async detail(id) {
+            if (this.user) {
+                router.push(`/annonces/${id}`);
+            } else {
+                await this.presentAlert("Vous devez vous connecter pour voir les détails ", "Oops")
+                return
+            }
         }
     }
 
-}
+})
 </script>
 
 <style scoped>
@@ -73,9 +109,23 @@ ion-card>img {
     height: 50vh;
 }
 
+
+
 @media (max-width: 600px) {
     ion-card>img {
         height: 150px;
     }
+}
+
+ion-searchbar {
+    --ion-background-color: aliceblue;
+    --border-radius: 10px;
+}
+
+.search {
+    width: 90%;
+    margin: 10px auto;
+
+
 }
 </style>

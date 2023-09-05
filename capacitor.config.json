@@ -1,0 +1,8 @@
+{
+  "appId": "com.quickfind.app",
+  "appName": "QuickFind",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "https"
+  }
+}
